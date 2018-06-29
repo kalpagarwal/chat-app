@@ -14,14 +14,19 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
   console.log('New user connected');
 
-  socket.emit('newMessage', {
-    from: 'Kalp',           //sending to client (1)
-    text: 'Hey. What is going on.',
-    createAt: 123
-  });
+  // socket.emit('newMessage', {
+  //   from: 'Kalp',           //sending to client (1)
+  //   text: 'Hey. What is going on.',
+  //   createAt: 123
+  // });
 
   socket.on('createMessage', (message) => {      //receiving from client (2)
     console.log('createMessage', message);
+    io.emit('newMessage',{
+      from:message.from,
+      text:message.text,
+      createAt:new Date().getTime()
+    });
   });
 
   socket.on('disconnect', () => {
@@ -34,16 +39,3 @@ server.listen(port, () => {
 });
 
 
-
-io.on("connection", function (socket) {
-    var tweet = {user: "nodesource", text: "Hello, world!"};
-
-    // to make things interesting, have it send every second
-    var interval = setInterval(function () {
-        socket.emit("tweet", tweet);
-    }, 1000);
-
-    socket.on("disconnect", function () {
-        clearInterval(interval);
-    });
-});
